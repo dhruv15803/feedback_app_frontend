@@ -1,11 +1,12 @@
 import {BrowserRouter as Router,Routes,Route} from "react-router-dom"
 import AuthPage from './pages/AuthPage';
 import AppContextProvider from "./context/AppContext";
-import Layout from "./layouts/layout";
 import ProtectedRoute from "./layouts/ProtectedRoute";
 import CreateFormPage from "./pages/CreateFormPage";
 import FormPage from "./pages/FormPage";
 import FormResponsesPage from "./pages/FormResponsesPage";
+import MyFormsPage from "./pages/MyFormsPage";
+import Layout from "./layouts/Layout";
 export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
               <Route path="/" element={<ProtectedRoute/>}>
                 <Route index element={<CreateFormPage/>}/>
                 <Route path="form-responses/:formId" element={<FormResponsesPage/>}/>
+                <Route path="my-forms" element={<MyFormsPage/>}/>
               </Route>
               <Route path="auth" element={<AuthPage/>}/>
               <Route path="form/:formId" element={<FormPage/>}/>

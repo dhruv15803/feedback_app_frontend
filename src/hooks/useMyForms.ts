@@ -10,6 +10,7 @@ export const useMyForms = () => {
     const [isLoading,setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
+
         const fetchMyForms = async () => {
             try {
                 setIsLoading(true);
@@ -28,4 +29,5 @@ export const useMyForms = () => {
     },[])
 
     return {forms,isLoading};
+
 }

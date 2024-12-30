@@ -62,7 +62,7 @@ const Navbar = () => {
                                 <DropdownMenuContent>
                                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                     <DropdownMenuSeparator/>
-                                    <DropdownMenuItem onClick={() => navigate("/form-responses")}>My form responses</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => navigate("/my-forms")}>My forms</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                             <Button onClick={handleLogout} size="sm">
