@@ -13,18 +13,18 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import { AppContext } from '@/context/AppContext';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-  
 const Navbar = () => {
     const navigate = useNavigate();
     const {loggedInUser, setLoggedInUser} = useContext(AppContext) as AppContextType;
 
     const handleLogout = async () => {
         try {
-            const response = await axios.get(`${API_URL}/auth/logout`,{
-                withCredentials:true,
+            const response = await axios.get(`${API_URL}/auth/logout`, {
+                withCredentials: true,
             });
             console.log(response);
             setLoggedInUser(null);
@@ -35,45 +35,47 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="border-b">
+        <nav className="border-b bg-white">
             <div className="flex h-16 items-center px-4 container mx-auto">
                 <div className="flex items-center space-x-4">
-                    <Link to="/" className="font-bold text-xl">
-                        QuickForm
+                    <Link to="/" className="font-bold text-2xl text-blue-600">
+                        FormFriends
                     </Link>
                 </div>
                 <div className="flex-1" />
                 <div className="hidden md:flex items-center space-x-4">
                     {loggedInUser ? (
                         <>
+                            <Button variant="ghost" asChild>
+                                <Link to="/my-forms">My Forms</Link>
+                            </Button>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <div className='flex items-center gap-2'>
-                                    <div className="relative w-10 h-10 overflow-hidden rounded-full">
-                      <img
-                        src={loggedInUser.profileImageUrl}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                                    <Button variant="ghost" className="flex items-center gap-2">
+                                        <Avatar className="w-8 h-8">
+                                            <AvatarImage src={loggedInUser.profileImageUrl} alt={loggedInUser.username} />
+                                            <AvatarFallback>{loggedInUser.username.charAt(0).toUpperCase()}</AvatarFallback>
+                                        </Avatar>
                                         <span className="text-sm font-medium">{loggedInUser.username}</span>
-                                    </div>
+                                    </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
                                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                     <DropdownMenuSeparator/>
-                                    <DropdownMenuItem onClick={() => navigate("/my-forms")}>My forms</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => navigate("/my-forms")}>My Forms</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={handleLogout}>
+                                        <LogOut className="h-4 w-4 mr-2" />
+                                        Logout
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <Button onClick={handleLogout} size="sm">
-                                <LogOut className="h-4 w-4 mr-2" />
-                                Logout
-                            </Button>
                         </>
                     ) : (
-                        <Button asChild>
-                            <Link to="/auth">Sign In</Link>
-                        </Button>
+                        <>
+                            <Button asChild>
+                                <Link to="/auth">Sign Up</Link>
+                            </Button>
+                        </>
                     )}
                 </div>
                 <div className="md:hidden">
@@ -89,15 +91,20 @@ const Navbar = () => {
                                 {loggedInUser ? (
                                     <>
                                         <span className="text-sm font-medium">{loggedInUser.username}</span>
+                                        <Button asChild variant="ghost" className="w-full justify-start">
+                                            <Link to="/my-forms">My Forms</Link>
+                                        </Button>
                                         <Button onClick={handleLogout} className="w-full justify-start">
                                             <LogOut className="h-4 w-4 mr-2" />
                                             Logout
                                         </Button>
                                     </>
                                 ) : (
-                                    <Button asChild className="w-full justify-start">
-                                        <Link to="/auth">Sign In</Link>
-                                    </Button>
+                                    <>
+                                        <Button asChild className="w-full justify-start">
+                                            <Link to="/auth">Sign Up</Link>
+                                        </Button>
+                                    </>
                                 )}
                             </div>
                         </SheetContent>
