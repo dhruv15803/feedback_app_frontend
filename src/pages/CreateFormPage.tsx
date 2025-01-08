@@ -48,7 +48,8 @@ const CreateFormPage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [createdForm,setCreatedForm] = useState<FormType | null>(null);
   const [copied, setCopied] = useState(false);
-  const { toast } = useToast()
+  const { toast } = useToast();
+  const [order,setOrder] = useState<any>(null);
 
   console.log(createdForm);
 
@@ -60,9 +61,114 @@ const CreateFormPage = () => {
       field_title3: '',
       theme: 'default',
     },
-  })
+  });
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.async=true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    }
+  },[]);
 
   const formUrl = createdForm ? `${window.location.origin}/form/${createdForm._id}` : '';
+
+  const createRazorPayOrder = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/payment/create-order`,{
+      },{
+        withCredentials:true,
+      });
+      return response.data.order;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  const handlePayment = async (formData: z.infer<typeof formSchema>) => {
+    try {
+        setIsLoading(true);
+        const orderResponse = await createRazorPayOrder();
+        console.log(orderResponse);
+        if (!orderResponse) {
+            throw new Error('Failed to create order');
+        }
+        setOrder(orderResponse);
+
+        const options = {
+            key: 'rzp_test_Ns9IYmfokPdTpv',
+            amount: orderResponse.amount,
+            currency: 'INR',
+            name: 'Form Creation',
+            description: 'Payment for creating a feedback form',
+            order_id: orderResponse.id,
+            handler: async (response: any) => {
+                try {
+                    console.log('Payment success response:', response);
+                    
+                    const verifyResponse = await axios.post(
+                        `${API_URL}/payment/verify-payment`,
+                        {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                        },
+                        {
+                            withCredentials: true,
+                        }
+                    );
+
+                    console.log('Verification response:', verifyResponse.data);
+
+                    if (verifyResponse.data.success && verifyResponse.data.verified) {
+                        // Set a small delay to ensure order state is updated
+                        setTimeout(() => {
+                            createForm(formData);
+                        }, 100);
+                    } else {
+                        throw new Error(verifyResponse.data.message || 'Payment verification failed');
+                    }
+                } catch (error: any) {
+                    console.error('Payment verification or form creation failed:', error);
+                    toast({
+                        title: error.message || 'Payment verification failed',
+                        variant: 'destructive'
+                    });
+                } finally {
+                    setIsLoading(false);
+                }
+            },
+            modal: {
+                ondismiss: function() {
+                    setIsLoading(false);
+                }
+            },
+            prefill: {
+                name: loggedInUser?.username,
+                email: loggedInUser?.email,
+            },
+            theme: {
+                color: '#3B82F6',
+            }
+        };
+
+        const razorPayInstance = new (window as any).Razorpay(options);
+        razorPayInstance.open();
+    } catch (error: any) {
+        console.error('Payment initiation failed:', error);
+        toast({
+            title: error.message || 'Failed to initiate payment',
+            variant: 'destructive',
+        });
+        setIsLoading(false);
+    }
+};
+
+  
 
   const copyToClipboard = async () => {
     try {
@@ -79,6 +185,60 @@ const CreateFormPage = () => {
       });
     }
   };
+  const createForm = async (values: z.infer<typeof formSchema>) => {
+    try {
+        const { field_title1, field_title2, field_title3, theme } = values;
+        
+        // Check if order exists
+
+        console.log('Creating form with values:', { 
+            field_title1, 
+            field_title2, 
+            field_title3, 
+            theme, 
+            orderId: order?.id || ""
+        });
+
+        const response = await axios.post(
+            `${API_URL}/form`,
+            {
+                field_title1,
+                field_title2,
+                field_title3,
+                theme,
+                orderId: order?.id || "",
+            },
+            { 
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        console.log('Form creation response:', response.data);
+
+        if (!response.data.form) {
+            throw new Error('Form data is missing in response');
+        }
+
+        setCreatedForm(response.data.form);
+        toast({
+            title: 'Form created successfully',
+        });
+    } catch (error: any) {
+        console.error('Form creation error:', error);
+        console.error('Error details:', error.response?.data);
+        toast({
+            title: error.message || 'Failed to create form',
+            description: 'Please try again or contact support',
+            variant: 'destructive',
+        });
+        // Reset form creation state
+        setCreatedForm(null);
+        setOrder(null);
+    }
+};
 
   const createNewForm = () => {
     setCreatedForm(null);
@@ -86,28 +246,8 @@ const CreateFormPage = () => {
   };
 
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-        const {field_title1,field_title2,field_title3,theme} = values;
-        setIsLoading(true);
-        const response = await axios.post(`${API_URL}/form`,{
-            field_title1,
-            field_title2,
-            field_title3,
-            theme,
-        },{
-            withCredentials:true,
-        });
-        setCreatedForm(response.data.form);
-        toast({
-            title:"Created form",
-        });
-    } catch (error:any) {
-        console.log(error);
-        toast({title:"Something went wrong",variant:"destructive"});
-    } finally {
-        setIsLoading(false);
-    }
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    handlePayment(values);
   }
 
   const watchTheme = form.watch('theme')
@@ -123,7 +263,7 @@ const CreateFormPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
         <div className="container mx-auto px-4 py-12">
-          <Card className="w-full max-w-2xl mx-auto backdrop-blur-sm bg-white/80 shadow-xl border-0">
+          <Card className="w-full max-w-2xl mx-auto bg-white/80 shadow-xl border-0">
             <CardHeader>
               <div className="flex items-center gap-2 mb-4">
                 <CheckCircle2 className="w-8 h-8 text-green-500" />
@@ -190,7 +330,7 @@ const CreateFormPage = () => {
           <p className="text-gray-600">Design your personalized questionnaire and gather honest feedback</p>
         </div>
 
-        <Card className="w-full max-w-2xl mx-auto backdrop-blur-sm bg-white/80 shadow-xl border-0 overflow-hidden">
+        <Card className="w-full max-w-2xl mx-auto bg-white/80 shadow-xl border-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-50" />
           
           <CardHeader className="relative">

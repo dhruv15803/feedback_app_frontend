@@ -1,10 +1,10 @@
 import { Loader } from '@/components/Loader';
 import { AppContext } from '@/context/AppContext';
 import { AppContextType } from '@/types';
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FormInput, Users, Lock, Share2 } from 'lucide-react'
+import { FormInput,Lock, Share2 } from 'lucide-react'
 import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
