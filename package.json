@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "npm install --legacy-peer-deps && tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+  "dev": "vite",
+  "build": "npm install --force && tsc -b && vite build",
+  "lint": "eslint .",
+  "preview": "vite preview"
   },
   "dependencies": {
     "@cloudinary/react": "^1.13.1",
