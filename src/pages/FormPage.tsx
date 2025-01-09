@@ -56,7 +56,7 @@ const FormPage = () => {
     try {
       setIsSubmitting(true)
       const {answer1, answer2, answer3} = values;
-      const response = await axios.post(`${API_URL}/form-response`, {
+      await axios.post(`${API_URL}/form-response`, {
         "form_id": form?._id,
         "field1_value": answer1,
         "field2_value": answer2,

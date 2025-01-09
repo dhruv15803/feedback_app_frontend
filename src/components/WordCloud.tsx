@@ -7,10 +7,10 @@ interface WordCloudProps {
   formResponses: FormResponseType[];
 }
 
-interface Word {
-  text: string;
-  value: number;
-}
+// interface Word {
+//   text: string;
+//   value: number;
+// }
 
 export function WordCloud({ formResponses }: WordCloudProps) {
   const [dimensions, setDimensions] = useState<[number, number]>([0, 0]);
