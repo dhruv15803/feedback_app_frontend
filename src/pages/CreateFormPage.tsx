@@ -100,7 +100,7 @@ const CreateFormPage = () => {
         setOrder(orderResponse);
 
         const options = {
-            key: 'rzp_test_Ns9IYmfokPdTpv',
+            key: import.meta.env.VITE_RAZORPAY_KEY,
             amount: orderResponse.amount,
             currency: 'INR',
             name: 'Form Creation',

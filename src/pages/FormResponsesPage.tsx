@@ -7,6 +7,7 @@ import { Loader } from '@/components/Loader'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight, MessageSquare } from 'lucide-react'
+import { WordCloud } from '@/components/WordCloud'
 
 const FormResponsesPage = () => {
   const PAGE_LIMIT = 2;
@@ -60,6 +61,11 @@ const FormResponsesPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white py-12">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold mb-8 text-center text-blue-600">Form Responses</h1>
+        
+        {/* Word Cloud Section */}
+        <WordCloud formResponses={formResponses} />
+
+        {/* Response Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {formResponses.map((response: FormResponseType) => (
             <Card key={response._id} className="w-full bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -122,5 +128,5 @@ const FormResponsesPage = () => {
   )
 }
 
-export default FormResponsesPage;
+export default FormResponsesPage
 
