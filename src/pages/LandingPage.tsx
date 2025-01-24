@@ -22,15 +22,15 @@ const LandingPage = () => {
         <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
             <main className="container mx-auto px-4 py-12">
                 <section className="text-center mb-16">
-                    <h2 className="text-4xl font-bold mb-4">Create, Share, and Gather Feedback Anonymously</h2>
+                    <h2 className="text-4xl font-bold mb-4">Create, share and gather Feedback Anonymously</h2>
                     <p className="text-xl text-gray-600 mb-8">
-                        FormFriends lets you create forms and share them with friends. 
+                        Feedback Tool lets you create forms and share them with friends. 
                         Get honest, anonymous feedback without any sign-up barriers.
                     </p>
                     {!loggedInUser && (
                         <Link to="/auth">
                             <Button size="lg" className="animate-pulse">
-                                Get Started for Free
+                                Get Started for only INR 99/-
                             </Button>
                         </Link>
                     )}
@@ -94,7 +94,7 @@ const LandingPage = () => {
 
             <footer className="bg-gray-100 mt-16 py-8">
                 <div className="container mx-auto px-4 text-center text-gray-600">
-                    <p>&copy; 2024 FormFriends. All rights reserved.</p>
+                    <p>&copy; 2025 lifelonglearners. All rights reserved.</p>
                 </div>
             </footer>
         </div>
